@@ -157,7 +157,7 @@ void ContextBase::readConfig()
         mSap_conf.SENSOR_ACCEL_SAMPLES_PER_BATCH_HIGH = 25;
         mSap_conf.SENSOR_GYRO_BATCHES_PER_SEC_HIGH = 4;
         mSap_conf.SENSOR_GYRO_SAMPLES_PER_BATCH_HIGH = 25;
-        mSap_conf.SENSOR_CONTROL_MODE = 0; /* AUTO */
+        mSap_conf.SENSOR_CONTROL_MODE = 1; /* AUTO */
         mSap_conf.SENSOR_ALGORITHM_CONFIG_MASK = 0; /* INS Disabled = FALSE*/
         /* Values MUST be set by OEMs in configuration for sensor-assisted
           navigation to work. There are NO default values */

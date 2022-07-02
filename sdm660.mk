@@ -178,7 +178,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     flp.conf \
     gnss_antenna_info.conf \
-    gps.conf
+    gps.conf \
+    xtwifi.conf
 
 # Health
 PRODUCT_PACKAGES += \
