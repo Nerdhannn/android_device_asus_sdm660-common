@@ -181,12 +181,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <transport>hwbinder</transport>
         <fqname>@3.0::IRTPService/imsrtpservice</fqname>
     </hal>
-    <!-- PERF -->
-    <hal format="hidl">
-        <name>vendor.qti.hardware.perf</name>
-        <transport>hwbinder</transport>
-	<fqname>@2.0::IPerf/default</fqname>
-    </hal>
     <!-- QTI RADIO -->
     <hal format="hidl">
         <name>vendor.qti.hardware.radio.qtiradio</name>

@@ -33,12 +33,30 @@ on early-init
     write /proc/sys/kernel/sched_boost 1
 
 on init
-    write /dev/stune/foreground/schedtune.sched_boost_no_override 1
-    write /dev/stune/top-app/schedtune.sched_boost_no_override 1
-    write /dev/stune/schedtune.colocate 0
-    write /dev/stune/background/schedtune.colocate 0
-    write /dev/stune/foreground/schedtune.colocate 0
-    write /dev/stune/top-app/schedtune.colocate 1
+    write /dev/stune/foreground/schedtune.prefer_idle 1
+    write /dev/stune/top-app/schedtune.boost 5
+    write /dev/stune/top-app/schedtune.prefer_idle 1
+
+    # Setup permission for Power HAL
+    chown system system /dev/stune/top-app/schedtune.boost
+    chown system system /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/min_freq
+    chown system system /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/max_freq
+    chown system system /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/force_rail_on
+    chown system system /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/force_clk_on
+    chown system system /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/idle_timer
+    chown system system /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/min_freq
+    chown system system /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hyst_trigger_count
+    chown system system /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hist_memory
+
+    chmod 0664 /dev/stune/top-app/schedtune.boost
+    chmod 0664 /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/min_freq
+    chmod 0664 /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/max_freq
+    chmod 0664 /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/force_rail_on
+    chmod 0664 /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/force_clk_on
+    chmod 0664 /sys/devices/soc/5000000.qcom,kgsl-3d0/kgsl/kgsl-3d0/idle_timer
+    chmod 0664 /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/min_freq
+    chmod 0664 /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hyst_trigger_count
+    chmod 0664 /sys/devices/soc/soc:qcom,cpubw/devfreq/soc:qcom,cpubw/bw_hwmon/hist_memory
 
     write /sys/devices/virtual/graphics/fb0/idle_time 100
 
@@ -57,7 +75,7 @@ on init
 on fs
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
-    mount_all /vendor/etc/fstab.qcom
+    mount_all /vendor/etc/fstab.qcom --early
     chown root system /mnt/vendor/persist
     chmod 0771 /mnt/vendor/persist
     mkdir /mnt/vendor/persist/data 0700 system system
@@ -74,6 +92,24 @@ on post-fs
     start vendor.qseecomd
     wait_for_prop vendor.sys.listeners.registered true
     write /dev/ipa 1
+
+on late-fs
+    # Start services for bootanim
+    start surfaceflinger
+    start bootanim
+
+    start vendor.hwcomposer-2-1
+    start vendor.configstore-hal
+    start vendor.gralloc-2-0
+    start vendor.light-hal-2-0
+
+    # Wait for hwservicemanager ready since fsck might be triggered in mount_all --late
+    # In such case, init won't responce the property_set from hwservicemanager and then
+    # cause services for bootanim not running.
+    wait_for_prop hwservicemanager.ready true
+
+    # Mount RW partitions which need run fsck
+    mount_all /vendor/etc/fstab.qcom --late
 
 on init
     write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
