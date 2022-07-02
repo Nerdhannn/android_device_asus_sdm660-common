@@ -34,7 +34,7 @@ vendor.display.disable_skip_validate=1
 persist.vendor.overlay.izat.optin=rro
 
 # Graphics
-debug.sf.latch_unsignaled=1
+debug.sf.latch_unsignaled=0
 persist.demo.hdmirotationlock=false
 sdm.debug.disable_skip_validate=1
 
@@ -67,6 +67,7 @@ persist.radio.VT_CAM_INTERFACE=2
 persist.sys.fflag.override.settings_network_and_internet_v2=true
 ril.subscription.types=NV,RUIM
 telephony.lteOnCdmaDevice=1
+persist.sys.fflag.override.settings_provider_model=false
 
 # Time
 persist.timed.enable=true
